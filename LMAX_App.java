@@ -1,3 +1,10 @@
+/*
+Script is extracted from currency trading system.
+The script is to parse the market data feed that is grouped under the FIX protocol.
+Script will then pass the FIX message to the appropriate Listener callback for further handling by functions 
+inherited from Application Class.
+*/
+
 package com.hftj;
 
 import com.lmax.api.Callback;
@@ -31,9 +38,10 @@ public class LMAX_App extends MessageCracker implements Application, Subject, Lo
 
     private com.lmax.api.Session websession;
 
-    private static String username = "zhipc123";
-    private static String password = "Czp1991918";
+    private static String username = "*****";
+    private static String password = "*****";
 
+    //constructor - initializing necessary object according to the broker provided API//
     public LMAX_App() throws ConfigError {
         instrument_list = new ArrayList<Instrument>();
         exereportHashtable = new Hashtable<>();
@@ -75,6 +83,7 @@ public class LMAX_App extends MessageCracker implements Application, Subject, Lo
         }).start();
     }
 
+    //callback to process log on status//
     @Override
     public void onLoginSuccess(com.lmax.api.Session session) {
         System.out.println("Logged on web trading platform." + "\nAccount details: "
@@ -159,7 +168,8 @@ public class LMAX_App extends MessageCracker implements Application, Subject, Lo
             unsupportedMessageType.printStackTrace();
         }
     }
-
+    
+    //function to parse incoming market data feed FIX message and assemble into a 1-D array//
     public void onMessage(quickfix.fix44.MarketDataSnapshotFullRefresh  message, SessionID sessionID) throws FieldNotFound {
 
         double[] market_entry = new double[marketdepth*4 +1];
@@ -183,7 +193,8 @@ public class LMAX_App extends MessageCracker implements Application, Subject, Lo
         }
         Notify_Tick_Listener(message.getSecurityID().getValue(), market_entry);
     }
-
+    
+    //function to parse order execution report FIX message and assemble into a 1-D array//
     public void onMessage(quickfix.fix44.ExecutionReport message, SessionID sessionID) throws FieldNotFound {
         System.out.println("catching execution report");
         System.out.print(message);
